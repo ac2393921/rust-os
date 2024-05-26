@@ -100,7 +100,27 @@ impl Writer {
     }
 
     fn new_line(&mut self) {
-        // TODO
+        // すべての文字を一行上に持っていき（一番上の行は消去されます）
+        for row in 1..BUFFER_HEIGHT {
+            for col in 0..BUFFER_WIDTH {
+                let character = self.buffer.chars[row][col].read();
+                self.buffer.chars[row - 1][col].write(character);
+            }
+        }
+        // 前の行の最初から始めるようにカーソルをリセット
+        self.clear_row(BUFFER_HEIGHT - 1);
+        self.column_position = 0;
+    }
+
+    // すべての文字を空白文字で書き換えることによって行をクリア
+    fn clear_row(&mut self, row: usize) {
+        let blank = ScreenChar {
+            ascii_character: b' ',
+            color_code: self.color_code,
+        };
+        for col in 0..BUFFER_WIDTH {
+            self.buffer.chars[row][col].write(blank);
+        }
     }
 }
 
